@@ -20,13 +20,13 @@ fi
 echo "✓ Docker found: $(docker --version)"
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     echo "Error: Docker Compose is not installed"
     echo "Please install Docker Compose from https://docs.docker.com/compose/install/"
     exit 1
 fi
 
-echo "✓ Docker Compose found: $(docker-compose --version)"
+echo "✓ Docker Compose found: $(docker compose --version)"
 
 # Check if .env file exists
 if [ ! -f .env ]; then
@@ -40,17 +40,17 @@ fi
 # Stop any running containers
 echo ""
 echo "Stopping any running containers..."
-docker-compose down 2>/dev/null || true
+docker compose down 2>/dev/null || true
 
 # Build images
 echo ""
 echo "Building Docker images..."
-docker-compose build
+docker compose build
 
 # Start services
 echo ""
 echo "Starting services..."
-docker-compose up -d
+docker compose up -d
 
 # Wait for services to be healthy
 echo ""
@@ -60,7 +60,7 @@ sleep 10
 # Check service status
 echo ""
 echo "Checking service status..."
-docker-compose ps
+docker compose ps
 
 # Test Consumer Gateway health
 echo ""
@@ -80,7 +80,7 @@ done
 
 if [ $retry_count -eq $max_retries ]; then
     echo "⚠ Consumer Gateway health check timed out"
-    echo "Check logs with: docker-compose logs consumer_gateway"
+    echo "Check logs with: docker compose logs consumer_gateway"
 fi
 
 echo ""
@@ -96,10 +96,10 @@ echo "  - Gateway:           Running in background"
 echo "  - Sensor Simulator:  Running in background"
 echo ""
 echo "Useful commands:"
-echo "  View logs:           docker-compose logs -f"
-echo "  Stop services:       docker-compose down"
-echo "  Restart services:    docker-compose restart"
-echo "  View status:         docker-compose ps"
+echo "  View logs:           docker compose logs -f"
+echo "  Stop services:       docker compose down"
+echo "  Restart services:    docker compose restart"
+echo "  View status:         docker compose ps"
 echo ""
 echo "Using the CLI:"
 echo "  Health check:        python -m cli.cli health"
@@ -112,4 +112,4 @@ echo "  Schemas:             curl http://localhost:5000/api/schemas"
 echo "  Profiles:            curl http://localhost:5000/api/profiles"
 echo ""
 
-# Made with Bob
+

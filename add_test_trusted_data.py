@@ -110,4 +110,3 @@ if __name__ == "__main__":
         print("  docker compose ps mongodb")
         print("  docker compose logs mongodb")
 
-# Made with Bob

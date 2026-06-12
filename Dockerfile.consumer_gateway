@@ -22,4 +22,4 @@ EXPOSE 5000
 # Run the consumer gateway
 CMD ["python", "-m", "consumer_gateway.consumer_gateway"]
 
-# Made with Bob
+# Made with # Com 

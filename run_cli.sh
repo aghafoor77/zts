@@ -14,4 +14,4 @@ export PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH"
 # Run the CLI with all arguments passed to this script
 python cli/cli.py "$@"
 
-# Made with Bob
+# Made with # Com 

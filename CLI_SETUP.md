@@ -271,4 +271,3 @@ The conda environment includes:
 
 ---
 
-**Made with Bob**

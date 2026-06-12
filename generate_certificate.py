@@ -95,4 +95,4 @@ if __name__ == "__main__":
     print("\n=== Certificate as single-line string ===")
     print(f'"{cert_oneline}"')
 
-# Made with Bob
+# Made with # Com 

@@ -48,4 +48,4 @@ echo "To deactivate the environment:"
 echo "  conda deactivate"
 echo ""
 
-# Made with Bob
+# Made with # Com 

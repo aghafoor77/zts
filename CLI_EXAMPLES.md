@@ -514,4 +514,3 @@ Error connecting to Consumer Gateway
 
 ---
 
-**Made with Bob**

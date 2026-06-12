@@ -494,4 +494,4 @@ DdvsAdfFGmHMcMRXoOj5tjDm0RAmpCym+t4=
     except KeyboardInterrupt:
         sensor.disconnect()
 
-# Made with Bob
+# Made with # Com 

@@ -20,4 +20,4 @@ COPY run_gateway.py .
 # Run the gateway
 CMD ["python", "run_gateway.py"]
 
-# Made with Bob
+# Made with # Com 
