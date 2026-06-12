@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY config/ ./config/
+COPY gateway/ ./gateway/
+COPY profile_store/ ./profile_store/
+COPY sensor/ ./sensor/
+
+# Create main script
+COPY run_sensor.py .
+
+# Run the sensor
+CMD ["python", "run_sensor.py"]
+
+# Made with Bob

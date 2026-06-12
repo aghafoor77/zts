@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY config/ ./config/
+COPY profile_store/ ./profile_store/
+COPY gateway/ ./gateway/
+COPY data_lake/ ./data_lake/
+
+# Create main script
+COPY run_gateway.py .
+
+# Run the gateway
+CMD ["python", "run_gateway.py"]
+
+# Made with Bob

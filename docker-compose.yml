@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  # MongoDB for Data Lake
+  mongodb:
+    image: mongo:7.0
+    container_name: iot_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=iot_data_lake
+    networks:
+      - iot_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Eclipse Mosquitto MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: iot_mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+    networks:
+      - iot_network
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Gateway Service
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: iot_gateway
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB_NAME=iot_data_lake
+      - AES_KEY=ThisIsASecretKey
+    networks:
+      - iot_network
+    restart: unless-stopped
+
+  # Consumer Gateway API
+  consumer_gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.consumer_gateway
+    container_name: iot_consumer_gateway
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB_NAME=iot_data_lake
+      - CONSUMER_GATEWAY_HOST=0.0.0.0
+      - CONSUMER_GATEWAY_PORT=5000
+    networks:
+      - iot_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Web Interface
+  web_interface:
+    build:
+      context: ./web-interface
+      dockerfile: Dockerfile
+    container_name: iot_web_interface
+    depends_on:
+      consumer_gateway:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    networks:
+      - iot_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  # Sensor Simulator (optional - for testing)
+  sensor_simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.sensor
+    container_name: iot_sensor_simulator
+    depends_on:
+      gateway:
+        condition: service_started
+      mosquitto:
+        condition: service_healthy
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+      - AES_KEY=ThisIsASecretKey
+      - SENSOR_ID=sensor_001
+      - DEVICE_TYPE=sensor
+      - MANUFACTURER=TempCorp
+      - MODEL=TH-100
+    networks:
+      - iot_network
+    restart: unless-stopped
+
+networks:
+  iot_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  mosquitto_data:
+  mosquitto_logs:
+
+# Made with Bob

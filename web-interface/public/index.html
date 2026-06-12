@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZTS Data Lake - Zero Trust Security</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .header h1 {
+            color: #3b82f6;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        .header p { color: #94a3b8; }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .nav button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .nav button:hover { background: #2563eb; transform: translateY(-2px); }
+        .nav button.active { background: #10b981; }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            color: #3b82f6;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-value.success { color: #10b981; }
+        .stat-value.warning { color: #f59e0b; }
+        .stat-value.info { color: #3b82f6; }
+        .stat-label { color: #94a3b8; font-size: 0.9em; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        th {
+            background: #334155;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        tr:hover { background: #334155; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge.success { background: #10b98120; color: #10b981; border: 1px solid #10b981; }
+        .badge.danger { background: #ef444420; color: #ef4444; border: 1px solid #ef4444; }
+        .badge.info { background: #3b82f620; color: #3b82f6; border: 1px solid #3b82f6; }
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+        .error {
+            background: #ef444420;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ ZTS Data Lake</h1>
+            <p>Zero Trust Security - IoT Data Management System</p>
+        </div>
+
+        <div class="nav">
+            <button onclick="showDashboard()" class="active" id="btn-dashboard">Dashboard</button>
+            <button onclick="showDataExplorer()" id="btn-data">Data Explorer</button>
+            <button onclick="showTraceability()" id="btn-trace">Traceability</button>
+            <button onclick="showSchemas()" id="btn-schemas">Schemas</button>
+        </div>
+
+        <div id="content"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let autoRefreshInterval = null;
+
+        function setActive(btnId) {
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+        }
+
+        async function fetchAPI(endpoint) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                return { error: error.message };
+            }
+        }
+
+        function startAutoRefresh() {
+            // Clear any existing interval
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            // Set up auto-refresh every 60 seconds (1 minute)
+            autoRefreshInterval = setInterval(() => {
+                const activeBtn = document.querySelector('.nav button.active');
+                if (activeBtn && activeBtn.id === 'btn-dashboard') {
+                    console.log('Auto-refreshing dashboard...');
+                    showDashboard();
+                }
+            }, 60000); // 60000ms = 1 minute
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        async function showDashboard() {
+            setActive('btn-dashboard');
+            startAutoRefresh(); // Start auto-refresh when dashboard is shown
+            
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Loading dashboard...</div>';
+
+            const profiles = await fetchAPI('/profiles');
+            if (profiles.error) {
+                content.innerHTML = `<div class="error">Error: ${profiles.error}<br>Make sure the Consumer Gateway is running on port 5000</div>`;
+                return;
+            }
+
+            let totalRecords = 0, trustedRecords = 0, signedRecords = 0;
+
+            // Aggregate data from ALL profiles for system-wide statistics
+            if (profiles.profile_ids && profiles.profile_ids.length > 0) {
+                for (const profileId of profiles.profile_ids) {
+                    const data = await fetchAPI(`/data/profile/${profileId}?limit=100`);
+                    if (data.trust_info) {
+                        // Use total_count for accurate statistics (not limited by query)
+                        totalRecords += data.total_count || data.count || 0;
+                        trustedRecords += data.trust_info.trusted_records || 0;
+                        signedRecords += data.trust_info.signed_records || 0;
+                    }
+                }
+            }
+
+            const trustPercentage = totalRecords > 0 ? (trustedRecords / totalRecords * 100).toFixed(1) : 0;
+            const lastUpdate = new Date().toLocaleTimeString();
+
+            content.innerHTML = `
+                <div style="text-align: right; color: #94a3b8; font-size: 0.9em; margin-bottom: 10px;">
+                    🔄 Auto-refresh: ON (every 1 min) | Last update: ${lastUpdate}
+                </div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Records</div>
+                        <div class="stat-value info">${totalRecords}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Trust Score</div>
+                        <div class="stat-value ${trustPercentage >= 90 ? 'success' : trustPercentage >= 70 ? 'warning' : 'danger'}">${trustPercentage}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Trusted Records</div>
+                        <div class="stat-value success">${trustedRecords}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Signed Records</div>
+                        <div class="stat-value info">${signedRecords}</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Available Profiles (${profiles.count})</h2>
+                    <ul style="margin-top: 15px; line-height: 2;">
+                        ${profiles.profile_ids.map(id => `<li>📊 ${id}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        async function showDataExplorer() {
+            setActive('btn-data');
+            stopAutoRefresh(); // Stop auto-refresh when leaving dashboard
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Loading data explorer...</div>';
+
+            const profiles = await fetchAPI('/profiles');
+            if (profiles.error) {
+                content.innerHTML = `<div class="error">Error: ${profiles.error}</div>`;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="card">
+                    <h2>Data Explorer</h2>
+                    <select id="profile-select" class="search-box" onchange="loadProfileData()">
+                        <option value="">Select a profile...</option>
+                        ${profiles.profile_ids.map(id => `<option value="${id}">${id}</option>`).join('')}
+                    </select>
+                    <div id="data-results"></div>
+                </div>
+            `;
+        }
+
+        async function loadProfileData() {
+            const profileId = document.getElementById('profile-select').value;
+            const results = document.getElementById('data-results');
+            
+            if (!profileId) {
+                results.innerHTML = '';
+                return;
+            }
+
+            results.innerHTML = '<div class="loading">Loading data...</div>';
+            
+            const data = await fetchAPI(`/data/profile/${profileId}?limit=50`);
+            if (data.error) {
+                results.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                return;
+            }
+
+            const trustInfo = data.trust_info || {};
+            results.innerHTML = `
+                <div style="margin: 20px 0; padding: 15px; background: #334155; border-radius: 8px;">
+                    <strong>Trust Info:</strong> 
+                    Trusted: ${trustInfo.trusted_records || 0} | 
+                    Signed: ${trustInfo.signed_records || 0} | 
+                    Trust: ${(trustInfo.trust_percentage || 0).toFixed(1)}%
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sensor ID</th>
+                            <th>Timestamp</th>
+                            <th>Trusted</th>
+                            <th>Signed</th>
+                            <th>Data Preview</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.data.map(record => `
+                            <tr>
+                                <td>${record.sensor_id}</td>
+                                <td>${new Date(record.timestamp).toLocaleString()}</td>
+                                <td>${record.data_trusted ? '<span class="badge success">✓</span>' : '<span class="badge danger">✗</span>'}</td>
+                                <td>${record.data_signed ? '<span class="badge success">✓</span>' : '<span class="badge danger">✗</span>'}</td>
+                                <td><pre style="font-size: 0.85em; max-width: 300px; overflow: auto;">${JSON.stringify(record.data, null, 2).substring(0, 100)}...</pre></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function showTraceability() {
+            setActive('btn-trace');
+            stopAutoRefresh(); // Stop auto-refresh when leaving dashboard
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Loading access logs...</div>';
+
+            const logs = await fetchAPI('/access-logs?limit=50');
+            if (logs.error) {
+                content.innerHTML = `<div class="error">Error: ${logs.error}</div>`;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="card">
+                    <h2>Access Logs & Traceability</h2>
+                    <p>Total Logs: <strong>${logs.count}</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Consumer ID</th>
+                                <th>Action</th>
+                                <th>Resource Type</th>
+                                <th>Resource ID</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${logs.logs.map(log => `
+                                <tr>
+                                    <td>${log.consumer_id}</td>
+                                    <td><span class="badge info">${log.action}</span></td>
+                                    <td>${log.resource_type}</td>
+                                    <td>${log.resource_id}</td>
+                                    <td>${new Date(log.timestamp).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function showSchemas() {
+            setActive('btn-schemas');
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Loading schemas...</div>';
+
+            const schemas = await fetchAPI('/schemas');
+            if (schemas.error) {
+                content.innerHTML = `<div class="error">Error: ${schemas.error}</div>`;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="card">
+                    <h2>Schema Browser</h2>
+                    <p>Total Schemas: <strong>${schemas.count}</strong></p>
+                    ${schemas.schemas.map(schema => `
+                        <div class="card" style="margin-top: 20px;">
+                            <h3 style="color: #10b981;">📋 ${schema.profile_id}</h3>
+                            <p style="color: #94a3b8; margin: 10px 0;">Created: ${new Date(schema.created_at).toLocaleString()}</p>
+                            <details>
+                                <summary style="cursor: pointer; padding: 10px; background: #334155; border-radius: 5px; margin: 10px 0;">View Schema</summary>
+                                <pre style="background: #0f172a; padding: 15px; border-radius: 5px; overflow-x: auto; margin-top: 10px;">${JSON.stringify(schema.schema, null, 2)}</pre>
+                            </details>
+                            <details>
+                                <summary style="cursor: pointer; padding: 10px; background: #334155; border-radius: 5px; margin: 10px 0;">View Sample Data</summary>
+                                <pre style="background: #0f172a; padding: 15px; border-radius: 5px; overflow-x: auto; margin-top: 10px;">${JSON.stringify(schema.sample_data, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Initialize
+        showDashboard();
+    </script>
+</body>
+</html>

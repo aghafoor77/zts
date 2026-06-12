@@ -1,0 +1,27 @@
+# MQTT Protocol
+paho-mqtt==1.6.1
+
+# Encryption
+pycryptodome==3.19.0
+
+# Certificate Generation
+cryptography==41.0.7
+
+# NoSQL Database
+pymongo==4.6.1
+
+# Web Framework for Consumer Gateway
+flask==3.0.0
+flask-cors==4.0.0
+
+# JSON Schema Generation
+genson==1.2.2
+
+# CLI
+click==8.1.7
+tabulate==0.9.0
+python-dateutil==2.8.2
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0

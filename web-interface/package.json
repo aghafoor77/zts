@@ -1,0 +1,11 @@
+{
+  "name": "web-interface",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "cra-template-minimal": "1.0.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-scripts": "5.0.1"
+  }
+}
