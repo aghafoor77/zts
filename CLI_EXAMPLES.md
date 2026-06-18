@@ -510,7 +510,7 @@ Error connecting to Consumer Gateway
 **Solutions:**
 - Ensure Docker services are running: `docker-compose up -d`
 - Check Consumer Gateway: `docker-compose logs consumer_gateway`
-- Verify port 5000 is not in use: `netstat -an | grep 5000`
+- Verify port 5012 is not in use: `netstat -an | grep 5012`
 
 ---
 

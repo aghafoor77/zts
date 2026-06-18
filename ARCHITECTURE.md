@@ -92,7 +92,7 @@ The IoT Data Lake System is a comprehensive solution for managing IoT sensor dat
                     │  - GET /api/profiles   │
                     │  - GET /api/data/...   │
                     │                        │
-                    │  Port: 5000            │
+                    │  Port: 5012            │
                     └────────────┬───────────┘
                                  │
                                  │ HTTP/REST

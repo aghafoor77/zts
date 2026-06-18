@@ -22,7 +22,7 @@ docker-compose ps
 Once all services are running:
 
 - **Web Interface**: http://localhost:3000
-- **Consumer Gateway API**: http://localhost:5000/api
+- **Consumer Gateway API**: http://localhost:5012/api
 - **MQTT Broker**: localhost:1883
 - **MongoDB**: localhost:27017
 
@@ -47,7 +47,7 @@ Once all services are running:
   - `AES_KEY=ThisIsASecretKey`
 
 ### 4. Consumer Gateway (API)
-- **Port**: 5000
+- **Port**: 5012
 - **Purpose**: REST API for data access
 - **Dependencies**: MongoDB
 - **Health Check**: HTTP GET /health every 10s
@@ -99,7 +99,7 @@ AES_KEY=ThisIsASecretKey
 
 # Consumer Gateway
 CONSUMER_GATEWAY_HOST=0.0.0.0
-CONSUMER_GATEWAY_PORT=5000
+CONSUMER_GATEWAY_PORT=5012
 
 # Sensor Configuration
 SENSOR_ID=sensor_001
@@ -146,7 +146,7 @@ docker-compose ps
 # iot_mongodb               Up (healthy)        27017
 # iot_mosquitto             Up (healthy)        1883, 9001
 # iot_gateway               Up                  -
-# iot_consumer_gateway      Up (healthy)        5000
+# iot_consumer_gateway      Up (healthy)        5012
 # iot_web_interface         Up (healthy)        3000
 # iot_sensor_simulator      Up                  -
 ```
@@ -156,13 +156,13 @@ docker-compose ps
 #### Test Consumer Gateway API
 ```bash
 # Health check
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
 # List profiles
-curl http://localhost:5000/api/profiles
+curl http://localhost:5012/api/profiles
 
 # List schemas
-curl http://localhost:5000/api/schemas
+curl http://localhost:5012/api/schemas
 ```
 
 #### Test Web Interface
@@ -231,7 +231,7 @@ docker-compose restart web_interface
 docker-compose logs consumer_gateway
 
 # Test API directly
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
 # Check network connectivity
 docker-compose exec web_interface ping consumer_gateway
@@ -401,13 +401,13 @@ open http://localhost:3001  # Grafana
 
 ```bash
 # Query data with trust info
-curl "http://localhost:5000/api/data/profile/<profile_id>?consumer_id=my_app"
+curl "http://localhost:5012/api/data/profile/<profile_id>?consumer_id=my_app"
 
 # View access logs
-curl "http://localhost:5000/api/access-logs?limit=50"
+curl "http://localhost:5012/api/access-logs?limit=50"
 
 # Get schemas
-curl "http://localhost:5000/api/schemas"
+curl "http://localhost:5012/api/schemas"
 ```
 
 ## 🎯 Complete System Test
@@ -420,18 +420,18 @@ docker-compose up -d
 sleep 30
 
 # 3. Test API
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
 # 4. Test Web Interface
 curl http://localhost:3000
 
 # 5. Check sensor data (wait for sensor to send data)
 sleep 60
-curl http://localhost:5000/api/profiles
+curl http://localhost:5012/api/profiles
 
 # 6. Query data
-PROFILE_ID=$(curl -s http://localhost:5000/api/profiles | jq -r '.profile_ids[0]')
-curl "http://localhost:5000/api/data/profile/$PROFILE_ID?limit=10"
+PROFILE_ID=$(curl -s http://localhost:5012/api/profiles | jq -r '.profile_ids[0]')
+curl "http://localhost:5012/api/data/profile/$PROFILE_ID?limit=10"
 
 # 7. Open web interface in browser
 open http://localhost:3000
@@ -441,15 +441,15 @@ open http://localhost:3000
 
 ### Ports Used
 - **3000**: Web Interface
-- **5000**: Consumer Gateway API
+- **5012**: Consumer Gateway API
 - **1883**: MQTT Broker
 - **9001**: MQTT WebSocket
 - **27017**: MongoDB
 
 ### Default Access
 - Web UI: http://localhost:3000
-- API: http://localhost:5000/api
-- Health: http://localhost:5000/health
+- API: http://localhost:5012/api
+- Health: http://localhost:5012/health
 
 ### Quick Commands
 ```bash

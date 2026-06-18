@@ -197,7 +197,7 @@
 
             const profiles = await fetchAPI('/profiles');
             if (profiles.error) {
-                content.innerHTML = `<div class="error">Error: ${profiles.error}<br>Make sure the Consumer Gateway is running on port 5000</div>`;
+                content.innerHTML = `<div class="error">Error: ${profiles.error}<br>Make sure the Consumer Gateway is running on port 5012</div>`;
                 return;
             }
 

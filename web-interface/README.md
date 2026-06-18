@@ -61,7 +61,7 @@ web-interface/
 The web interface communicates with the Consumer Gateway API through nginx proxy:
 
 - **Frontend**: `http://localhost:3000`
-- **API Proxy**: `http://localhost:3000/api/*` → `http://consumer-gateway:5000/*`
+- **API Proxy**: `http://localhost:3000/api/*` → `http://consumer-gateway:5012/*`
 
 ### API Endpoints Used
 
@@ -104,7 +104,7 @@ python3 -m http.server 8000
 
 2. **Update API endpoint** in `index.html`:
 ```javascript
-const API_BASE = 'http://localhost:5000';  // Direct to Consumer Gateway
+const API_BASE = 'http://localhost:5012';  // Direct to Consumer Gateway
 ```
 
 3. **Access**: http://localhost:8000
@@ -154,7 +154,7 @@ docker ps | grep consumer_gateway
 
 2. Test API directly:
 ```bash
-curl http://localhost:5000/profiles
+curl http://localhost:5012/profiles
 ```
 
 ### Port conflicts

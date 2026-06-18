@@ -96,7 +96,7 @@ def add_trusted_test_data():
     print(f"   - Select '{test_profile_id}' in Data Explorer")
     print()
     print(f"3. Check via API:")
-    print(f"   curl 'http://localhost:5000/api/data/profile/{test_profile_id}?limit=20'")
+    print(f"   curl 'http://localhost:5012/api/data/profile/{test_profile_id}?limit=20'")
     print()
     print("Trust Score should show: ~75% (15/20 trusted records)")
     print("=" * 60)

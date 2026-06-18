@@ -207,7 +207,7 @@ source ~/.bashrc
 ### Issue: "Error connecting to Consumer Gateway"
 **Solution**: 
 1. Check if Docker services are running: `docker-compose ps`
-2. Verify Consumer Gateway is accessible: `curl http://localhost:5000/health`
+2. Verify Consumer Gateway is accessible: `curl http://localhost:5012/health`
 3. Check config/config.py for correct host/port settings
 
 ### Issue: "No profiles available"

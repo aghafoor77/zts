@@ -51,7 +51,7 @@ python -m cli.cli health
 
 ### Network Requirements
 - Port 1883 (MQTT)
-- Port 5000 (Consumer Gateway API)
+- Port 5012 (Consumer Gateway API)
 - Port 3000 (Web Interface)
 - Port 27017 (MongoDB - internal)
 - Port 9001 (MQTT WebSocket - optional)
@@ -139,7 +139,7 @@ MONGO_DB_NAME=iot_data_lake
 
 # Consumer Gateway Configuration
 CONSUMER_GATEWAY_HOST=0.0.0.0
-CONSUMER_GATEWAY_PORT=5000
+CONSUMER_GATEWAY_PORT=5012
 
 # Encryption (CHANGE IN PRODUCTION!)
 AES_KEY=YourSecretKey123456
@@ -153,7 +153,7 @@ To change default ports, edit `docker-compose.yml`:
 services:
   consumer_gateway:
     ports:
-      - "8080:5000"  # Change 5000 to 8080
+      - "8080:5012"  # Change 5012 to 8080
   
   web_interface:
     ports:
@@ -190,13 +190,13 @@ docker-compose logs consumer_gateway
 
 ```bash
 # Health check
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
 # List profiles
-curl http://localhost:5000/api/profiles
+curl http://localhost:5012/api/profiles
 
 # Get schemas
-curl http://localhost:5000/api/schemas
+curl http://localhost:5012/api/schemas
 ```
 
 ### 3. Test Web Interface
@@ -285,13 +285,13 @@ python -m cli.cli interactive
 
 ```bash
 # Get data with trust info
-curl "http://localhost:5000/api/data/profile/<profile_id>?limit=10"
+curl "http://localhost:5012/api/data/profile/<profile_id>?limit=10"
 
 # Get access logs
-curl "http://localhost:5000/api/access-logs?limit=50"
+curl "http://localhost:5012/api/access-logs?limit=50"
 
 # Search data
-curl "http://localhost:5000/api/search?query=temperature&limit=20"
+curl "http://localhost:5012/api/search?query=temperature&limit=20"
 ```
 
 ## Troubleshooting
@@ -319,7 +319,7 @@ docker-compose up -d
 docker-compose ps consumer_gateway
 
 # Test API directly
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
 # Check logs
 docker-compose logs consumer_gateway
@@ -352,7 +352,7 @@ s.disconnect()
 **Solution**:
 ```bash
 # Find process using port
-lsof -i :3000  # or :5000, :1883, etc.
+lsof -i :3000  # or :5012, :1883, etc.
 
 # Kill process or change port in docker-compose.yml
 ```
@@ -464,7 +464,7 @@ services:
 # Create monitoring script
 cat > monitor.sh << 'EOF'
 #!/bin/bash
-curl -f http://localhost:5000/health || echo "API DOWN"
+curl -f http://localhost:5012/health || echo "API DOWN"
 curl -f http://localhost:3000/ || echo "WEB DOWN"
 EOF
 
@@ -552,7 +552,7 @@ After successful deployment:
 For issues and questions:
 - Check logs: `docker-compose logs`
 - Review documentation: README.md, CLI_EXAMPLES.md
-- Test API: `curl http://localhost:5000/health`
+- Test API: `curl http://localhost:5012/health`
 
 ## Additional Resources
 

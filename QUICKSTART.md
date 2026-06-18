@@ -92,7 +92,7 @@ python -m cli.cli interactive
 ### 1. Check Health
 
 ```bash
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 ```
 
 Expected output:
@@ -109,17 +109,17 @@ The test sensor sends data every 10 seconds. Wait about 30 seconds, then:
 
 ```bash
 # List available profiles
-curl http://localhost:5000/api/profiles
+curl http://localhost:5012/api/profiles
 ```
 
 ### 3. Query Data via API
 
 ```bash
 # Get schemas
-curl http://localhost:5000/api/schemas
+curl http://localhost:5012/api/schemas
 
 # Get data for a profile (replace PROFILE_ID)
-curl "http://localhost:5000/api/data/profile/PROFILE_ID?limit=10"
+curl "http://localhost:5012/api/data/profile/PROFILE_ID?limit=10"
 ```
 
 ### 4. Query Data via CLI
@@ -224,10 +224,10 @@ db.sensor_data.find().limit(5)
 ### CLI not connecting?
 ```bash
 # Verify Consumer Gateway is running
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 
-# Check if port 5000 is available
-netstat -an | grep 5000
+# Check if port 5012 is available
+netstat -an | grep 5012
 ```
 
 ## Next Steps

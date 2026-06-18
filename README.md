@@ -207,7 +207,7 @@ MONGO_DB_NAME=iot_data_lake
 
 # Consumer Gateway Configuration
 CONSUMER_GATEWAY_HOST=0.0.0.0
-CONSUMER_GATEWAY_PORT=5000
+CONSUMER_GATEWAY_PORT=5012
 
 # Encryption Configuration
 AES_KEY=YourSecretKey123  # Change this!
@@ -404,7 +404,7 @@ sensor.disconnect()
 
 ### Consumer Gateway REST API
 
-Base URL: `http://localhost:5000/api`
+Base URL: `http://localhost:5012/api`
 
 #### Endpoints
 
@@ -638,7 +638,7 @@ docker-compose ps consumer_gateway
 docker-compose logs consumer_gateway
 
 # Test health endpoint
-curl http://localhost:5000/health
+curl http://localhost:5012/health
 ```
 
 #### 4. Sensor Not Connecting

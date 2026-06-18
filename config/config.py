@@ -23,7 +23,7 @@ MONGO_COLLECTION_SCHEMAS = 'schemas'
 
 # Consumer Gateway API Settings
 CONSUMER_GATEWAY_HOST = os.getenv('CONSUMER_GATEWAY_HOST', '0.0.0.0')
-CONSUMER_GATEWAY_PORT = int(os.getenv('CONSUMER_GATEWAY_PORT', 5000))
+CONSUMER_GATEWAY_PORT = int(os.getenv('CONSUMER_GATEWAY_PORT', 5012))
 
 # Encryption Settings
 AES_KEY = os.getenv('AES_KEY', 'ThisIsASecretKey')  # 16 bytes for AES-128

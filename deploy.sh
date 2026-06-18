@@ -69,7 +69,7 @@ max_retries=30
 retry_count=0
 
 while [ $retry_count -lt $max_retries ]; do
-    if curl -s http://localhost:5000/health > /dev/null 2>&1; then
+    if curl -s http://localhost:5012/health > /dev/null 2>&1; then
         echo "✓ Consumer Gateway is healthy"
         break
     fi
@@ -91,7 +91,7 @@ echo ""
 echo "Services running:"
 echo "  - MongoDB:           localhost:27017"
 echo "  - MQTT Broker:       localhost:1883"
-echo "  - Consumer Gateway:  http://localhost:5000"
+echo "  - Consumer Gateway:  http://localhost:5012"
 echo "  - Gateway:           Running in background"
 echo "  - Sensor Simulator:  Running in background"
 echo ""
@@ -107,9 +107,9 @@ echo "  List schemas:        python -m cli.cli list-schemas"
 echo "  Interactive mode:    python -m cli.cli interactive"
 echo ""
 echo "API Documentation:"
-echo "  Health:              curl http://localhost:5000/health"
-echo "  Schemas:             curl http://localhost:5000/api/schemas"
-echo "  Profiles:            curl http://localhost:5000/api/profiles"
+echo "  Health:              curl http://localhost:5012/health"
+echo "  Schemas:             curl http://localhost:5012/api/schemas"
+echo "  Profiles:            curl http://localhost:5012/api/profiles"
 echo ""
 
 
